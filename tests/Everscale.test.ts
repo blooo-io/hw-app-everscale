@@ -72,7 +72,6 @@ test("signMessage", async () => {
   );
 });
 
-// TODO: implement this
 test("signTransaction", async () => {
   const transport = await openTransportReplayer(
     RecordStore.fromString(`
