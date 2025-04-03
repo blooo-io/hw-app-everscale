@@ -8,7 +8,8 @@ const DERIVATION_SUFIX = "'/0'/0'";
 
 const P_NONE = 0x00;
 
-const P1_SIGN_MESSAGE = 0x01;
+const P1_CONFIRM = 0x01;
+const P1_NON_CONFIRM = 0x00;
 
 const INS = {
   GET_CONFIGURATION: 0x01,
@@ -60,7 +61,8 @@ export default class Everscale {
   }
   async getAddress(
     accountNumber: number,
-    walletType: WalletType
+    walletType: WalletType,
+    display: boolean = true
   ): Promise<string> {
     const accountNumberHex = accountNumber.toString(16).padStart(8, "0");
     const walletTypeHex = walletType.toString(16).padStart(2, "0");
@@ -69,7 +71,7 @@ export default class Everscale {
     console.log(" km-logs --- [Everscale.ts] -- getAddress -- data:\n", data);
     const reply = await this.sendToDevice(
       INS.GET_ADDRESS,
-      P_NONE,
+      display ? P1_CONFIRM : P1_NON_CONFIRM,
       P_NONE,
       data
     );
@@ -81,12 +83,15 @@ export default class Everscale {
     return address;
   }
 
-  async getPublicKey(accountNumber: number): Promise<string> {
+  async getPublicKey(
+    accountNumber: number,
+    display: boolean = true
+  ): Promise<string> {
     const accountNumberHex = accountNumber.toString(16).padStart(8, "0");
     const data = Buffer.from(accountNumberHex, "hex");
     const reply = await this.sendToDevice(
       INS.GET_PUBLIC_KEY,
-      P_NONE,
+      display ? P1_CONFIRM : P1_NON_CONFIRM,
       P_NONE,
       data
     );
