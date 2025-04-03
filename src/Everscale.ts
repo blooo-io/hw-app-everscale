@@ -6,10 +6,17 @@ const LEDGER_CLA = 0xe0;
 const DERIVATION_PREFIX = "44'/396'/";
 const DERIVATION_SUFIX = "'/0'/0'";
 
+const CHUNK_SIZE = 255;
+
 const P_NONE = 0x00;
 
 const P1_CONFIRM = 0x01;
 const P1_NON_CONFIRM = 0x00;
+
+const P2_SINGLE_CHUNK = 0x00;
+const P2_LAST_CHUNK = 0x01;
+const P2_FIRST_CHUNK = 0x02;
+const P2_INTERMEDIATE_CHUNK = 0x03;
 
 const INS = {
   GET_CONFIGURATION: 0x01,
@@ -103,26 +110,73 @@ export default class Everscale {
     return publicKey;
   }
 
-  // TODO: implement this
   async signMessage(
     accountNumber: number,
     messageHash: string
   ): Promise<string> {
-    // get public key
-    const publicKey = await this.getPublicKey(accountNumber);
-    // hash the message
+    const accountNumberHexBuffer = Buffer.from(
+      accountNumber.toString(16).padStart(8, "0"),
+      "hex"
+    );
+    const messageHashBuffer = messageHash.startsWith("0x")
+      ? Buffer.from(messageHash.slice(2), "hex")
+      : Buffer.from(messageHash, "hex");
+    const data = Buffer.concat([accountNumberHexBuffer, messageHashBuffer]);
     // send the message hash to the device
     const reply = await this.sendToDevice(
       INS.SIGN_MESSAGE,
-      P1_SIGN_MESSAGE,
+      P1_CONFIRM,
       P_NONE,
-      Buffer.from(messageHash, "hex")
+      data
     );
-    return reply.toString("hex");
+
+    return "0x" + reply.toString("hex");
   }
 
   // TODO: implement this
-  signTransaction() {}
+  async signTransaction(inputData: string): Promise<string> {
+    const inputDataBuffer = inputData.startsWith("0x")
+      ? Buffer.from(inputData.slice(2), "hex")
+      : Buffer.from(inputData, "hex");
+
+    let chunks: Buffer[] = [];
+    for (let i = 0; i < inputDataBuffer.length; i += CHUNK_SIZE) {
+      chunks.push(inputDataBuffer.subarray(i, i + CHUNK_SIZE));
+    }
+
+    console.log(
+      "km-logs --- [Everscale.ts] -- signTransaction -- chunks:\n",
+      chunks
+    );
+
+    let reply;
+    if (chunks.length === 1) {
+      reply = await this.sendToDevice(
+        INS.SIGN_TRANSACTION,
+        P1_CONFIRM,
+        P2_SINGLE_CHUNK,
+        chunks[0]
+      );
+    } else {
+      for (let i = 0; i < chunks.length; i++) {
+        const chunk = chunks[i];
+        let p2 = P2_INTERMEDIATE_CHUNK;
+        if (i === chunks.length - 1) {
+          p2 = P2_LAST_CHUNK;
+        } else if (i === 0) {
+          p2 = P2_FIRST_CHUNK;
+        }
+        reply = await this.sendToDevice(
+          INS.SIGN_TRANSACTION,
+          P1_CONFIRM,
+          p2,
+          chunk
+        );
+      }
+    }
+    reply = reply.subarray(1);
+    return "0x" + reply.toString("hex");
+  }
 
   /**
    * Sends a command to the device.
