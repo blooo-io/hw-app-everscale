@@ -1,6 +1,5 @@
 import Transport from "@ledgerhq/hw-transport";
 import { StatusCodes } from "@ledgerhq/errors";
-import { WalletType } from "./type";
 const LEDGER_CLA = 0xe0;
 
 const DERIVATION_PREFIX = "44'/396'/";
@@ -25,6 +24,18 @@ const INS = {
   GET_ADDRESS: 0x04,
   SIGN_TRANSACTION: 0x05,
 };
+
+enum WalletType {
+  WALLET_V3 = 0,
+  EVER_WALLET = 1,
+  SAFE_MULTISIG_WALLET = 2,
+  SAFE_MULTISIG_WALLET_24H = 3,
+  SETCODE_MULTISIG_WALLET = 4,
+  BRIDGE_MULTISIG_WALLET = 5,
+  SURF_WALLET = 6,
+  MULTISIG_2 = 7,
+  MULTISIG_2_1 = 8,
+}
 
 /**
  * Everscale API
