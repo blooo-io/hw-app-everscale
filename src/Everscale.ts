@@ -191,7 +191,7 @@ export default class Everscale {
   /**
    * Sign a transaction with the device.
    *
-   * @param inputData - The transaction data to sign, as a hexadecimal string with or without "0x" prefix.
+   * @param inputData - The payload to sign, as a hexadecimal string with or without "0x" prefix.
    *                    The data is composed of:
    *                    - Account number (4 bytes): The account number to retrieve
    *                    - Wallet Type (1 byte): To derive address
