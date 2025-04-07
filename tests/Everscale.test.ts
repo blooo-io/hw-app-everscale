@@ -2,8 +2,7 @@ import {
   openTransportReplayer,
   RecordStore,
 } from "@ledgerhq/hw-transport-mocker";
-import Everscale from "../src/Everscale";
-import { WalletType } from "../src/type";
+import Everscale, { WalletType } from "../src/Everscale";
 import { listen } from "@ledgerhq/logs";
 listen((log) => console.log(log));
 
