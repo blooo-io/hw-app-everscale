@@ -2,18 +2,19 @@ export default {
   preset: "ts-jest",
   testEnvironment: "node",
   testRegex: ".test.ts$",
-  collectCoverage: true,
   testPathIgnorePatterns: ["packages/*/lib-es", "packages/*/lib"],
-  transformIgnorePatterns: ['/node_modules/(?!@everscale)'],
-  coveragePathIgnorePatterns: ["packages/create-dapp"],
+  transformIgnorePatterns: ["/node_modules/(?!@everscale)"],
   passWithNoTests: true,
   transform: {
-    '^.+\\.tsx?$': ['ts-jest', {
-      useESM: true,
-    }],
+    "^.+\\.tsx?$": [
+      "ts-jest",
+      {
+        useESM: true,
+      },
+    ],
   },
-  extensionsToTreatAsEsm: ['.ts'],
+  extensionsToTreatAsEsm: [".ts"],
   moduleNameMapper: {
-    '^(\\.{1,2}/.*)\\.js$': '$1',
+    "^(\\.{1,2}/.*)\\.js$": "$1",
   },
 };
