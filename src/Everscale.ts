@@ -25,7 +25,7 @@ const INS = {
   SIGN_TRANSACTION: 0x05,
 };
 
-enum WalletType {
+export enum WalletType {
   WALLET_V3 = 0,
   EVER_WALLET = 1,
   SAFE_MULTISIG_WALLET = 2,
